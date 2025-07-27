@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>➕ Create a Note</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #ffe0ec, #fff6f9);
+            color: #333;
+            padding: 50px;
+        }
+
+        .container {
+            background: #fff0f6;
+            padding: 30px;
+            max-width: 500px;
+            margin: auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(255, 144, 183, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff4d9d;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ffb6d5;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: #fff8fc;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #ff4d9d;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e0448a;
+        }
+
+        a.back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #ff4d9d;
+            text-decoration: none;
+        }
+
+        a.back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+ 
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector('form');
+
+    // 🎙️ Voice Note Recording
+    let mediaRecorder;
+    let audioChunks = [];
+
+    const startBtn = document.getElementById('start-record');
+    const stopBtn = document.getElementById('stop-record');
+    const audioPlayer = document.getElementById('audio-playback');
+    const fileInput = document.getElementById('voice_note_input');
+
+    if (startBtn && stopBtn) {
+        startBtn.addEventListener('click', async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                const audioUrl = URL.createObjectURL(blob);
+                audioPlayer.src = audioUrl;
+                audioPlayer.style.display = 'block';
+
+                // convert blob to file and attach to hidden input
+                const file = new File([blob], "voice_note.webm", { type: 'audio/webm' });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+            };
+
+            mediaRecorder.start();
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+        });
+
+        stopBtn.addEventListener("click", () => {
+            mediaRecorder.stop();
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        });
+    }
+
+    // 🖼️ Image Preview
+    const imageInput = document.getElementById("id_image");
+    const imagePreview = document.getElementById("image-preview");
+
+    if (imageInput && imagePreview) {
+        imageInput.addEventListener("change", function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.setAttribute("src", e.target.result);
+                    imagePreview.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.style.display = "none";
+            }
+        });
+    }
+
+    // ✍️ Auto-Save Draft
+    const titleInput = document.getElementById("id_title");
+    const contentInput = document.getElementById("id_content");
+    const clearBtn = document.getElementById("clear-draft");
+
+    const DRAFT_TITLE_KEY = "draft_note_title";
+    const DRAFT_CONTENT_KEY = "draft_note_content";
+
+    const savedTitle = localStorage.getItem(DRAFT_TITLE_KEY);
+    const savedContent = localStorage.getItem(DRAFT_CONTENT_KEY);
+
+   
+    if ((savedTitle || savedContent) && confirm("Restore your last draft?")) {
+        if (savedTitle) titleInput.value = savedTitle;
+        if (savedContent) contentInput.value = savedContent;
+    }
+
+    titleInput.addEventListener("input", () => {
+        localStorage.setItem(DRAFT_TITLE_KEY, titleInput.value);
+    });
+
+    contentInput.addEventListener("input", () => {
+        localStorage.setItem(DRAFT_CONTENT_KEY, contentInput.value);
+    });
+
+    form.addEventListener("submit", () => {
+        localStorage.removeItem(DRAFT_TITLE_KEY);
+        localStorage.removeItem(DRAFT_CONTENT_KEY);
+        document.querySelector('button[type="submit"]').disabled = true;
+    });
+
+      if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+            localStorage.removeItem(DRAFT_TITLE_KEY);
+            localStorage.removeItem(DRAFT_CONTENT_KEY);
+            titleInput.value = '';
+            contentInput.value = '';
+            alert("Draft cleared 💨");
+        });
+    }
+
+});
+</script>
+
+</head>
+<body> 
+    {% extends 'base.html' %}
+
+    {% block content %}
+    <div class="container">
+        <h1>💌 Write a New Note</h1>
+
+        <form method="post" enctype = "multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <label for="id_title">Title:</label>
+            {{ form.title }}
+            
+            <label for="id_content">Content:</label>
+            {{ form.content }}
+
+     {% comment %} <button type="button" id="start-record">🎙️ Start Recording</button> {% endcomment %}
+    {% comment %} <button type="button" id="stop-record" disabled>⏹️ Stop Recording</button>
+    <audio id="audio-playback" controls style="display: none;"></audio>
+
+    <input type="file" name="voice_note" id="voice_note_input" style="display: none;" />
+    
+    <label for="id_image">🖼️ Upload Image:</label>
+{{ form.image }}
+
+<!-- Image preview section -->
+<img id="image-preview" src="#" alt="Preview" style="display: none; max-width: 100%; margin-top: 10px; border-radius: 10px;" /> {% endcomment %}
+
+
+            <button type="submit">Save Note 💾</button>
+        </form>
+        <button type="button" id="clear-draft" style="background-color: #ffd1dc; color: #a6004c; border: none; padding: 10px 16px; border-radius: 10px; margin-top: 10px; cursor: pointer;">
+    🗑️ Clear Draft
+</button>
+        <a href="/" class="back-link">← Back to Notes</a>
+    </div>
+
+
+    {% endblock %}
+
+    
+</body>
+</html>

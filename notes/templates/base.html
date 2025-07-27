@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Notes App{% endblock %}</title>
+    
+    <!-- Fonts and Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    
+    <style>
+        :root {
+            --light-bg: #fdf6f0;
+            --light-text: #1c1c1c;
+            --light-card: #fff0f5;
+
+            --dark-bg: #1e1e2f;
+            --dark-text: #f5f5f5;
+            --dark-card: #1e1e2f;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        html.light body {
+            background-color: var(--light-bg);
+            color: var(--light-text);
+        }
+
+        html.dark body {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        html.cute body {
+    background-color: #fff0f5; /* pastel lavender pink */
+    color: #5c3c58; /* soft plum */
+    background-image: url('https://www.transparenttextures.com/patterns/hearts.png'); /* cute subtle hearts */
+    font-family: 'Comic Sans MS', 'Poppins', cursive;
+    transition: background-color 0.5s ease, color 0.5s ease, background-image 0.5s ease;
+}
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+          
+        }
+
+        html.light .container {
+            background-color: var(--light-card);
+        }
+
+        html.dark .container {
+            background-color: var(--dark-card);
+        }
+
+       html.cute .container {
+    background-color: #ffe6f0; /* soft pastel pink */
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 20px rgba(255, 182, 193, 0.4); /* dreamy pink glow */
+    border: 2px dashed #ffb6c1; /* cute candy dashed border */
+    font-family: 'Comic Sans MS', 'Poppins', cursive;
+    animation: floaty 3s ease-in-out infinite;
+    transition: all 0.5s ease;
+}
+
+        h1, h2, h3, p, label {
+            transition: color 0.3s ease;
+        }
+
+        input, textarea, button, select {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        html.light input,
+        html.light textarea,
+        html.light select {
+            background-color: #ffffff;
+            color: var(--light-text);
+        }
+
+        html.dark input,
+        html.dark textarea,
+        html.dark select {
+            background-color: #3a3a3a;
+            color: var(--dark-text);
+        }
+
+        button {
+            background-color: #ff80ab;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #ff4081;
+            transform: scale(1.03);
+        }
+
+        .theme-selector {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 14px;
+    color: #555;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-footer {
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+    font-size: 13px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    font-family: 'Poppins', sans-serif;
+    z-index: 999;
+}
+
+
+.theme-selector select {
+    padding: 4px 8px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+
+@keyframes floaty {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+
+        .theme-selector select {
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            color: #333;
+        }
+
+        .theme-selector select:hover {
+            background-color: #f0f0f0;
+        }
+
+        .theme-selector select option {
+            padding: 10px;
+        }
+
+        .theme-footer {
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            font-family: 'Poppins', sans-serif;
+        } 
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    h1, h2 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .form-control,
+    button,
+    textarea {
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    .theme-selector {
+        float: none;
+        display: block;
+        margin: 1rem auto;
+        text-align: center;
+    }
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--dark-bg);
+    padding: 1rem;
+    border-radius: 12px;
+    color: var(--dark-text);
+    margin-bottom: 1rem;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-links li a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+.nav-toggle {
+    display: none;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    color: inherit;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-toggle {
+        display: block;
+    }
+}
+
+
+button,
+select,
+input,
+textarea {
+    padding: 12px;
+    font-size: 1rem;
+    border-radius: 8px;
+}
+        input[type="text"],
+        textarea {
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: #ff80ab;
+            outline: none;
+            box-shadow: 0 0 5px rgba(255, 128, 171, 0.5);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ff80ab;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+.container {
+    padding: 2rem;
+    border-radius: 15px;
+    background: var(--light-bg);
+    color: var(--light-text);
+    max-width: 800px;
+    margin: auto;
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 1rem;
+        margin: 0 10px;
+    }
+
+    h1, h2 {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+}
+        .container {
+            background: var(--light-card);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+
+        h1 {
+            color: #ff80ab;
+            font-size: 2rem;
+            text-align: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links li a {
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links li a:hover {
+            background-color: #ff4081;
+        }
+
+
+        input[type="text"], textarea, select {
+    background-color: inherit;
+    color: inherit;
+    border: 1px solid var(--accent-color, #ccc);
+    padding: 10px;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+}
+
+button {
+    background-color: var(--accent-color, #ff69b4);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #d14fa3;
+}
+
+html {
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+button, input, textarea {
+    transition: all 0.3s ease;
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>{% block header %}My Notes 📝{% endblock %}</h1>
+      
+        <footer class = "theme-footer">
+        <div class="themeSelector"><!-- 🌗 Theme Switcher -->
+        <label for="themeSelector">Theme:</label>
+        <select id="themeSelector">
+            <option value="light">🌸 Light</option>
+            <option value="dark">🌙 Dark</option>
+            <option value="cute">🧁 cute </option>
+        </select>
+    </div>
+</footer>
+        <hr>
+
+        {% block content %}
+        <!-- Page-specific content goes here -->
+        {% endblock %}
+    </div>
+
+<nav class="navbar">
+    <div class="nav-brand">📝 MyNotes</div>
+    <button class="nav-toggle" id="navToggle">☰</button>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="/">Home</a></li>
+        {% comment %} <li><a href="/create">Create</a></li> {% endcomment %}
+        {% comment %} <li><a href="/delete">Delete</a></li> {% endcomment %}
+        <!-- Add more links as needed -->
+    </ul>
+</nav>
+ {% if messages %}
+  <div class="toast-container">
+    {% for message in messages %}
+      <div class="toast {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+    <!-- Theme Persistence Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const htmlEl = document.documentElement;
+            const themeSelector = document.getElementById('themeSelector');
+            const savedTheme = localStorage.getItem('theme') || 'light';
+
+            htmlEl.className = savedTheme;
+
+            if (themeSelector) {
+                themeSelector.value = savedTheme;
+
+                themeSelector.addEventListener('change', function () {
+                    const selected = this.value;
+                    htmlEl.className = selected;
+                    localStorage.setItem('theme', selected);
+                });
+            }
+
+             const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+
+    if (navToggle) {
+        navToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
+        });
+    </script>
+</body>
+</html>

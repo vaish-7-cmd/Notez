@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Note</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #fff0f5, #ffe6ec);
+            padding: 50px;
+            color: #333;
+        }
+
+        .container {
+            background: #fff8fc;
+            padding: 30px;
+            max-width: 500px;
+            margin: auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(255, 155, 185, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff4d9d;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ffb6d5;
+            border-radius: 10px;
+            background: #fffafc;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            background-color: #ff4d9d;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e0448a;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #ff4d9d;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    {% extends 'base.html' %}
+
+    {% block title %}Edit Note{% endblock %}
+
+    {% block content %}
+    <div class="container">
+
+        <h1>📝 Edit Note</h1>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <label for="id_title">Title:</label>
+            {{ form.title }}
+
+            <label for="id_content">Content:</label>
+            {{ form.content }}
+
+            <button type="submit">Update Note ✏️</button>
+        </form>
+
+        <a href="/" class="back-link">← Back to Notes</a>
+    </div>
+    {% endblock %}
+</body>
+</html>
